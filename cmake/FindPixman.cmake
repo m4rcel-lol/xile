@@ -1,0 +1,8 @@
+find_path(PIXMAN_INCLUDE_DIR pixman.h PATH_SUFFIXES pixman-1)
+find_library(PIXMAN_LIBRARY NAMES pixman-1 pixman)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Pixman REQUIRED_VARS PIXMAN_INCLUDE_DIR PIXMAN_LIBRARY)
+if(Pixman_FOUND AND NOT TARGET Pixman::Pixman)
+    add_library(Pixman::Pixman UNKNOWN IMPORTED)
+    set_target_properties(Pixman::Pixman PROPERTIES IMPORTED_LOCATION "${PIXMAN_LIBRARY}" INTERFACE_INCLUDE_DIRECTORIES "${PIXMAN_INCLUDE_DIR}")
+endif()

@@ -1,0 +1,150 @@
+name: Build Installers
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-installers:
+    name: Windows ${{ matrix.arch }} installer
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            preset: windows-x64
+            script: installer/windows/build_installer_x64.ps1
+            artifact: Xile-Setup-x64.exe
+            msvc_arch: x64
+          - arch: arm64
+            preset: windows-arm64
+            script: installer/windows/build_installer_arm64.ps1
+            artifact: Xile-Setup-arm64.exe
+            msvc_arch: amd64_arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.msvc_arch }}
+
+      - name: Install packaging tools
+        shell: pwsh
+        run: |
+          if (-not (Get-Command ninja -ErrorAction SilentlyContinue)) {
+            choco install ninja -y --no-progress
+          }
+          if (-not (Get-Command makensis -ErrorAction SilentlyContinue)) {
+            choco install nsis -y --no-progress
+          }
+          $nsis = "${env:ProgramFiles(x86)}\NSIS"
+          if (Test-Path $nsis) {
+            Add-Content $env:GITHUB_PATH $nsis
+          }
+
+      - name: Configure
+        shell: pwsh
+        run: cmake --preset ${{ matrix.preset }}
+
+      - name: Build
+        shell: pwsh
+        run: cmake --build --preset ${{ matrix.preset }} --parallel
+
+      - name: Build installer
+        shell: pwsh
+        run: pwsh -NoLogo -NoProfile -ExecutionPolicy Bypass -File ${{ matrix.script }}
+
+      - name: Verify installer artifact
+        shell: pwsh
+        run: |
+          $path = "installer\windows\${{ matrix.artifact }}"
+          if (-not (Test-Path $path)) {
+            throw "Missing installer artifact: $path"
+          }
+          if ((Get-Item $path).Length -le 0) {
+            throw "Installer artifact is empty: $path"
+          }
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: xile-windows-${{ matrix.arch }}
+          path: installer/windows/${{ matrix.artifact }}
+          if-no-files-found: error
+
+  macos-installers:
+    name: macOS ${{ matrix.arch }} installer
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            script: installer/macos/build_pkg_x86_64.sh
+            artifact: dist/macos/Xile-1.0.0-x86_64.pkg
+          - arch: arm64
+            script: installer/macos/build_pkg_arm64.sh
+            artifact: dist/macos/Xile-1.0.0-arm64.pkg
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          brew update
+          brew install ninja cmake
+
+      - name: Build installer
+        run: bash "${{ matrix.script }}"
+
+      - name: Verify installer package
+        run: |
+          test -s "${{ matrix.artifact }}"
+          pkgutil --check-signature "${{ matrix.artifact }}" || true
+          pkgutil --expand-full "${{ matrix.artifact }}" "/tmp/xile-pkg-${{ matrix.arch }}"
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: xile-macos-${{ matrix.arch }}
+          path: ${{ matrix.artifact }}
+          if-no-files-found: error
+
+  macos-universal-installer:
+    name: macOS universal installer
+    runs-on: macos-14
+    needs: macos-installers
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          brew update
+          brew install ninja cmake
+
+      - name: Build universal installer
+        run: bash installer/macos/build_universal.sh
+
+      - name: Verify universal package
+        run: |
+          test -s dist/macos/Xile-1.0.0-universal.pkg
+          pkgutil --expand-full dist/macos/Xile-1.0.0-universal.pkg /tmp/xile-pkg-universal
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: xile-macos-universal
+          path: dist/macos/Xile-1.0.0-universal.pkg
+          if-no-files-found: error

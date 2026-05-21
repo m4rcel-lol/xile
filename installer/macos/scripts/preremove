@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+/Applications/Xile.app/Contents/MacOS/xile-ctl stop 2>/dev/null || true
+launchctl unload "$HOME/Library/LaunchAgents/com.xile.server.plist" 2>/dev/null || true
+rm -f "$HOME/Library/LaunchAgents/com.xile.server.plist"

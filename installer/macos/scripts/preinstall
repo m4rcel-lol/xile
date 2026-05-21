@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+major="$(sw_vers -productVersion | awk -F. '{print $1}')"
+if [ "$major" -lt 12 ]; then
+  echo "Xile requires macOS 12.0 or later."
+  exit 1
+fi

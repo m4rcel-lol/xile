@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+mkdir -p /usr/local/bin
+cat > /usr/local/bin/xile-recover <<'SCRIPT'
+#!/bin/sh
+launchctl unload "$HOME/Library/LaunchAgents/com.xile.server.plist" 2>/dev/null || true
+rm -f "$HOME/Library/LaunchAgents/com.xile.server.plist"
+echo "Xile autostart disabled. Please log out and log back in."
+SCRIPT
+chmod 755 /usr/local/bin/xile-recover

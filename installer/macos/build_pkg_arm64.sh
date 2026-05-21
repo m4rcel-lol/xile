@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ARCH="arm64"
+VERSION="1.0.0"
+BUILD_DIR="build/macos-${ARCH}"
+PAYLOAD_DIR="payload/macos-${ARCH}"
+PKG_OUT="dist/macos/Xile-${VERSION}-${ARCH}.pkg"
+DIST_XML="${PAYLOAD_DIR}/Distribution.xml"
+cmake --preset "macos-${ARCH}"
+cmake --build --preset "macos-${ARCH}" --parallel
+APP_BUNDLE="${PAYLOAD_DIR}/Applications/Xile.app"
+CONTENTS="${APP_BUNDLE}/Contents"
+rm -rf "${PAYLOAD_DIR}"
+mkdir -p "${CONTENTS}/MacOS" "${CONTENTS}/Resources/fonts" "${CONTENTS}/Resources/themes/Xile" dist/macos
+cp "${BUILD_DIR}/xile-server" "${CONTENTS}/MacOS/"
+cp "${BUILD_DIR}/xile-ctl" "${CONTENTS}/MacOS/"
+cp -R src/fonts/. "${CONTENTS}/Resources/fonts/"
+cp -R src/wm/icewm_theme/Xile/. "${CONTENTS}/Resources/themes/Xile/"
+cp installer/macos/resources/Info.plist "${CONTENTS}/Info.plist"
+pkgbuild --root "${PAYLOAD_DIR}" --identifier "com.xile.pkg" --version "${VERSION}" --scripts installer/macos/scripts --install-location / "dist/macos/Xile-component-${ARCH}.pkg"
+sed "s/@COMPONENT_PKG@/Xile-component-${ARCH}.pkg/g" installer/macos/Distribution.xml > "${DIST_XML}"
+productbuild --distribution "${DIST_XML}" --resources installer/macos/resources --package-path dist/macos "${PKG_OUT}"

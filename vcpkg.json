@@ -1,0 +1,17 @@
+{
+  "name": "xile",
+  "version": "1.0.0",
+  "builtin-baseline": "5f100cf12d1f319b0f1da67206fc24b721dc7db0",
+  "dependencies": [
+    { "name": "freetype", "version>=": "2.13.2" },
+    { "name": "fontconfig", "version>=": "2.15.0" },
+    { "name": "openssl", "version>=": "3.3.0" },
+    { "name": "pixman", "version>=": "0.42.2" }
+  ],
+  "overrides": [
+    { "name": "freetype", "version": "2.13.2" },
+    { "name": "fontconfig", "version": "2.15.0" },
+    { "name": "openssl", "version": "3.3.0" },
+    { "name": "pixman", "version": "0.42.2" }
+  ]
+}

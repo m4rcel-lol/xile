@@ -1,0 +1,20 @@
+# Xile IceWM theme
+ThemeDescription="Xile"
+Look=flat
+TitleBarHeight=26
+TitleButtonsLeft=""
+TitleButtonsRight="xmir"
+ColorNormalBorder="#1f2028"
+ColorActiveBorder="#5a6af0"
+ColorNormalTitleBar="#20222d"
+ColorActiveTitleBar="#2b315c"
+ColorNormalTitleBarText="#e0e0e8"
+ColorActiveTitleBarText="#ffffff"
+ColorNormalMenu="#17181f"
+ColorActiveMenuItem="#5a6af0"
+ColorNormalMenuItemText="#e0e0e8"
+ColorActiveMenuItemText="#ffffff"
+ColorDefaultTaskBar="#111217"
+ColorNormalTaskBarApp="#20222d"
+ColorActiveTaskBarApp="#5a6af0"
+DesktopBackgroundColor="#0d0d0f"

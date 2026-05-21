@@ -1,0 +1,8 @@
+find_path(XLIB_INCLUDE_DIR X11/Xlib.h)
+find_library(XLIB_LIBRARY NAMES X11)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Xlib REQUIRED_VARS XLIB_INCLUDE_DIR XLIB_LIBRARY)
+if(Xlib_FOUND AND NOT TARGET Xlib::Xlib)
+    add_library(Xlib::Xlib UNKNOWN IMPORTED)
+    set_target_properties(Xlib::Xlib PROPERTIES IMPORTED_LOCATION "${XLIB_LIBRARY}" INTERFACE_INCLUDE_DIRECTORIES "${XLIB_INCLUDE_DIR}")
+endif()
