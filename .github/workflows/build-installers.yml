@@ -51,6 +51,19 @@ jobs:
             Add-Content $env:GITHUB_PATH $nsis
           }
 
+      - name: Verify Windows SDK
+        shell: pwsh
+        run: |
+          $sdkRoot = "${env:ProgramFiles(x86)}\Windows Kits\10\Include"
+          if (-not (Test-Path $sdkRoot)) {
+            throw "Windows 10/11 SDK include directory not found: $sdkRoot"
+          }
+          $bcrypt = Get-ChildItem $sdkRoot -Recurse -Filter bcrypt.h | Select-Object -First 1
+          if (-not $bcrypt) {
+            throw "bcrypt.h was not found in the installed Windows SDK"
+          }
+          Write-Host "Using Windows SDK header: $($bcrypt.FullName)"
+
       - name: Configure
         shell: pwsh
         run: cmake --preset ${{ matrix.preset }}

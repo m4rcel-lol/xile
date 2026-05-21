@@ -5,10 +5,10 @@
 #include <string.h>
 
 #ifdef _WIN32
+#include <windows.h>
 #include <bcrypt.h>
 #include <io.h>
 #include <sys/stat.h>
-#include <windows.h>
 #elif defined(__APPLE__)
 #include <fcntl.h>
 #include <sys/stat.h>

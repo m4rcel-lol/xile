@@ -1,5 +1,7 @@
 #include "mac_cgl_render.h"
 
+#include <stddef.h>
+#define GL_SILENCE_DEPRECATION
 #import <OpenGL/OpenGL.h>
 
 int mac_cgl_render_available(void) {

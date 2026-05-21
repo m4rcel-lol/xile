@@ -20,9 +20,19 @@ if(NOT XILE_PLATFORM)
     endif()
 endif()
 
+if(WIN32)
+    add_compile_definitions(
+        UNICODE
+        _UNICODE
+        WIN32_LEAN_AND_MEAN
+        NOMINMAX
+        _CRT_SECURE_NO_WARNINGS
+        WINVER=0x0A00
+        _WIN32_WINNT=0x0A00)
+endif()
+
 if(MSVC)
     add_compile_options(/W4 /WX /utf-8)
-    add_compile_definitions(UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX _CRT_SECURE_NO_WARNINGS)
 else()
     add_compile_options(-Wall -Wextra -Werror)
 endif()
@@ -62,6 +72,7 @@ elseif(XILE_PLATFORM STREQUAL "macos")
     enable_language(OBJC)
     set(CMAKE_OBJC_STANDARD 11)
     set(CMAKE_OBJC_STANDARD_REQUIRED ON)
+    add_compile_definitions(GL_SILENCE_DEPRECATION)
     add_compile_options("$<$<COMPILE_LANGUAGE:OBJC>:-fobjc-arc>")
     list(APPEND XILE_PLATFORM_SOURCES
         src/platform/macos/mac_backend.m
