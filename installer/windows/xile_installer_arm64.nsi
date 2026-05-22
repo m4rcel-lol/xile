@@ -1,1 +1,1 @@
-!include "installer\windows\xile_installer.nsi"
+!include "xile_installer.nsi"
