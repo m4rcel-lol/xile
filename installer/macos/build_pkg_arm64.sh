@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+cd "${REPO_ROOT}"
 ARCH="arm64"
 VERSION="1.0.0"
 BUILD_DIR="build/macos-${ARCH}"
@@ -14,6 +17,7 @@ rm -rf "${PAYLOAD_DIR}"
 mkdir -p "${CONTENTS}/MacOS" "${CONTENTS}/Resources/fonts" "${CONTENTS}/Resources/themes/Xile" dist/macos
 cp "${BUILD_DIR}/xile-server" "${CONTENTS}/MacOS/"
 cp "${BUILD_DIR}/xile-ctl" "${CONTENTS}/MacOS/"
+chmod 755 "${CONTENTS}/MacOS/xile-server" "${CONTENTS}/MacOS/xile-ctl"
 cp -R src/fonts/. "${CONTENTS}/Resources/fonts/"
 cp -R src/wm/icewm_theme/Xile/. "${CONTENTS}/Resources/themes/Xile/"
 cp installer/macos/resources/Info.plist "${CONTENTS}/Info.plist"

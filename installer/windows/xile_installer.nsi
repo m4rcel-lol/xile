@@ -3,12 +3,15 @@ Unicode true
 !define APPVERSION "1.0.0"
 !define APPID "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 !define INSTALL_DIR "$PROGRAMFILES64\Xile"
+!ifndef PROJECT_DIR
+!define PROJECT_DIR "."
+!endif
 
 RequestExecutionLevel admin
 InstallDir "${INSTALL_DIR}"
 InstallDirRegKey HKLM "Software\Xile" "InstallDir"
-OutFile "installer\windows\Xile-Setup-${ARCH}.exe"
-LicenseData "installer\windows\resources\license.rtf"
+OutFile "${PROJECT_DIR}\installer\windows\Xile-Setup-${ARCH}.exe"
+LicenseData "${PROJECT_DIR}\installer\windows\resources\license.rtf"
 
 Page license
 Page directory
